@@ -84,7 +84,7 @@ public unsafe class P2PBackrollSession<T> : BackrollSession<T> where T : struct 
         NumPredictionFrames = BackrollConstants.kMaxPredictionFrames,
      });
 
-      _localConnectStatus = new BackrollConnectStatus[PlayerCount];
+      _localConnectStatus = new BackrollConnectStatus[config.Players.Length];
      for (int i = 0; i < _localConnectStatus.Length; i++) {
         unchecked {
          _localConnectStatus[i].LastFrame = ~0;
@@ -100,7 +100,7 @@ public unsafe class P2PBackrollSession<T> : BackrollSession<T> where T : struct 
      var connections = new BackrollConnection[members.Length];
      for (var i = 0; i < connections.Length; i++) {
         var connection = new BackrollConnection(members[i], i, _localConnectStatus);
-        SetupConnection(connection);
+        SetupConnection(connection, i);
         connection.SetDisconnectTimeout((uint)DEFAULT_DISCONNECT_TIMEOUT);
         connection.SetDisconnectNotifyStart((uint)DEFAULT_DISCONNECT_NOTIFY_START);
         connection.Synchronize();
@@ -307,9 +307,8 @@ public unsafe class P2PBackrollSession<T> : BackrollSession<T> where T : struct 
     return -1;
   }
 
-  void SetupConnection(BackrollConnection connection) {
+  void SetupConnection(BackrollConnection connection, int queue) {
      var member = connection.LobbyMember;
-     var queue = GetIndex(connection.LobbyMember, _players);
      member.OnDisconnected += () => {
          if (queue >= 0) {
             DisconnectPlayer(QueueToPlayerHandle(queue));

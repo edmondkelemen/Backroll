@@ -52,6 +52,7 @@ public unsafe class BackrollConnection : IDisposable {
     QualityReport     = 3,
     QualityReply      = 4,
     KeepAlive         = 5,
+    SyncRequest       = 6,
   }
 
   [StructLayout(LayoutKind.Explicit, Size=12)]
@@ -140,6 +141,7 @@ public unsafe class BackrollConnection : IDisposable {
     _messageHandlers.RegisterHandler<QualityReportMessage>((byte)MessageCodes.QualityReport, OnQualityReport);
     _messageHandlers.RegisterHandler<QualityReplyMessage>((byte)MessageCodes.QualityReply, OnQualityReply);
     _messageHandlers.RegisterHandler<KeepAliveMessage>((byte)MessageCodes.KeepAlive, OnKeepAlive);
+    _messageHandlers.RegisterHandler<SyncRequestMessage>((byte)MessageCodes.SyncRequest, OnSyncRequest);
     _messageHandlers.Listen(LobbyMember);
 
     LobbyMember.OnNetworkMessage += OnNetworkMessage;
